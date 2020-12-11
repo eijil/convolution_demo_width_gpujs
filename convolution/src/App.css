@@ -1,0 +1,26 @@
+.App {
+  text-align: center;
+}
+.container{
+  display: flex;
+}
+.raw{
+
+  width: 50%;
+}
+.raw  img{
+    width: 100%;
+  }
+.result{
+  width: 50%;
+}
+.result canvas{ width: 100%;}
+.canvas-result{
+  display: flex;
+}
+.canvas-result div{
+  width: 50%;
+}
+.canvas-result canvas{
+  width: 100%;
+}
