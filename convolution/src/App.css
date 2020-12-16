@@ -1,13 +1,11 @@
 .App {
   text-align: center;
+  padding: 20px;
 }
 .container{
   display: flex;
 }
-.raw{
 
-  width: 50%;
-}
 .raw  img{
     width: 100%;
   }
@@ -16,11 +14,19 @@
 }
 .result canvas{ width: 100%;}
 .canvas-result{
-  display: flex;
+  
+
 }
 .canvas-result div{
-  width: 50%;
+  position: relative;
+  height: 80%;
 }
 .canvas-result canvas{
   width: 100%;
+}
+.canvas-result .loading{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50% -50%);
 }

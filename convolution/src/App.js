@@ -1,26 +1,25 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import './App.css';
-import img from './test.jpeg'
+import img from './8k.jpg'
+import loding from './loading.gif'
 import {GPU} from 'gpu.js'
+
 const gpu = new GPU()
 const Sharpen = [
   [0, -1, 0],
   [-1, 5, -1],
   [0, -1, 0]
 ];
+
 const edge = [
-  [0, -1, 0],
-  [-1, 4, -1],
-  [0, -1, 0]
-];
-const edgee = [
   [-1, -1, -1],
   [-1, 8, -1],
   [-1, -1, -1]
 ];
 
 const convolution = function (image, width, height, kernel ,container) {
+  console.log('gpu')
   const render = gpu
     .createKernel(function (image, kernel) {
       let r = 0,
@@ -50,6 +49,7 @@ const convolution = function (image, width, height, kernel ,container) {
  */
 const cpuConvolution = function (imageData,kernel,ctx){
   
+
  const { data,width,height} = imageData
  const result = ctx.createImageData(width, height);
  const outData = result.data
@@ -83,43 +83,49 @@ const cpuConvolution = function (imageData,kernel,ctx){
 
 function App() {
 
-  const [loading,setLoading] = useState(false)
-  const [ready,setReady] = useState(false)
+  const [cpuloading, setCpuloading] = useState(false)
   const [image,setImage] = useState(null)
-  
+  const [gpuloading, setGpuLoading] = useState(false)
 
   const gpuRef = useRef(null)
   const cpuRef = useRef(null)
 
 
-  const testCpu = (image)=>{
-    const { width, height } = image
-    const canvas = document.createElement("canvas")
-    const context = canvas.getContext('2d');
-    canvas.width = width
-    canvas.height = height
-    context.drawImage(image, 0, 0)
-    const imageData = context.getImageData(0, 0, width, height)
-    cpuConvolution(imageData, edgee, context)
-    cpuRef.current.appendChild(canvas) 
-  } 
+ 
 
   const handler =()=>{
-
-      const {width,height} = image
-      //convolution(image, width, height, Sharpen, gpuRef.current);
+      setGpuLoading(true)
+      setCpuloading(true)
       
-      testCpu(image)
+    
+      // setTimeout(() => {
+      //   const { width, height } = image
+      //   const canvas = document.createElement("canvas")
+      //   const context = canvas.getContext('2d');
+      //   canvas.width = width
+      //   canvas.height = height
+      //   context.drawImage(image, 0, 0)
+      //   const imageData = context.getImageData(0, 0, width, height)
+      //   cpuConvolution(imageData, edge, context)
+      //   cpuRef.current.appendChild(canvas) 
+      //   setCpuloading(false)
+        
+      // }, 0);
+
+      //gpu verions
+      setTimeout(() => {
+        const { width, height } = image
+        const canvas = document.createElement("canvas")
+        const context = canvas.getContext('2d');
+        canvas.width = width
+        canvas.height = height
+        context.drawImage(image, 0, 0)
+        const imageData = context.getImageData(0, 0, width, height)
+        convolution(image, width, height, edge, gpuRef.current);
+        setGpuLoading(false)
+      }, 0);
+    
      
-      
-       
-    //   //}
-    //   // const canvas = convolution(image, image.width, image.height);
-    //   // console.log(canvas);
-    //   // resultRef.current.innerHTML = "";
-    //   // resultRef.current.appendChild(canvas);
-
-
   }
 
   useEffect(() => {
@@ -128,7 +134,6 @@ function App() {
     image.src = img;
     image.onload = function () {
         setImage(image)
-
     }
 
 
@@ -142,11 +147,18 @@ function App() {
             <button onClick={handler}>click</button>
           }
           </div>
-     
         </div>
         <div className="canvas-result">
-          <div className="gpu" ref={gpuRef}></div>
-          <div className="cpu" ref={cpuRef}></div>
+          <div className="gpu" ref={gpuRef}>
+          <>
+            {gpuloading ? <img className="loading" src={loding} /> : ''}
+          </>
+          </div>
+          <div className="cpu" ref={cpuRef}>
+          <>
+            {cpuloading ? <img className="loading" src={loding} /> : ''}
+          </>
+          </div>
         </div>
     </div>
   );
